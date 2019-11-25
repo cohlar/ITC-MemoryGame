@@ -10,116 +10,95 @@
 
 "use strict";
 
-let start = function () {
-    html.init();
-    addEventListeners();
-};
+(function () {
 
-let addEventListeners = function () {
-    html.images.forEach(image => image.addEventListener("click", html.revealImage));
-};
+    let MemoryGame = {
+        
+        images: {
+            path: "images/",
+            unknownImageName: "0.jpg",
+            totalImagesAvailable: 34,   // number of bootcampers in cohort Oct 2019
+        },
+
+        session: {
+            numImages: 6,               // beginner mode
+            selectedImages: [],
+            imageRevealed: null,
+            hideImageLagTime: 2000,     // in ms
+            goodAnswerCount: 0,
+            wrongAnswerCount: 0,
+            isCompleted: false,
+        },
+    };
 
 
-let images = {
-    path: "images/",
-    unknownImageName: "0.jpg",
-    totalImagesAvailable: 34,   // number of bootcampers in cohort Oct 2019
-}
-
-let html = {
-    gameContainer: undefined,
-    images: undefined,
-
-    init: function () {
-        this.generateStructure();
+    MemoryGame.start = function () {
+        this.generateHtmlStructure();
         this.generateImagesHTML();
-    },
+        $(".game-img").on("click", this.revealImage);
+    };
 
-    generateStructure: function () {
-        this.gameContainer = document.createElement("div");
-        this.gameContainer.id = "game-container";
-        document.body.append(this.gameContainer);
-    },
+    MemoryGame.generateHtmlStructure = function () {
+        $("body").append('<div id="game-container"></div>');
+    };
 
-    generateImagesHTML: function () {
-        gameSession.selectImagesRandomly(gameSession.numImages);
-        gameSession.doubleImagesRandomly();
-        gameSession.selectedImages.forEach( function(imageName, index) {
-            let img = document.createElement("img");
-            img.src = images.path + images.unknownImageName;
-            img.id = index;
-            img.className = "game-img";
-            html.gameContainer.append(img);
+    MemoryGame.generateImagesHTML = function () {
+        this.selectImagesRandomly(this.session.numImages);
+        this.doubleImagesRandomly();
+        this.session.selectedImages.forEach(function (imageName, index) {
+            $("#game-container").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" >`));
         });
-        this.images = document.querySelectorAll(".game-img");
-    },
+    };
 
-    revealImage: function () {
-        this.src = images.path + gameSession.selectedImages[this.id] + ".jpg";
-        if (gameSession.isCompleted === false) {
-            if (gameSession.imageRevealed === null) {
-                gameSession.imageRevealed = this.id;
-            } else if (this.id !== gameSession.imageRevealed) {
-                if (gameSession.selectedImages[gameSession.imageRevealed] === gameSession.selectedImages[this.id]) {
-                    html.imagesRemoveEventListener();
-                    setTimeout(html.imagesAddEventListener, gameSession.hideImageLagTime);
-                    gameSession.goodAnswerCount++;
-                    gameSession.imageRevealed = null;
-                    console.log(this.id + " good: " + gameSession.goodAnswerCount);
+    MemoryGame.revealImage = function () {
+        this.src = MemoryGame.images.path + MemoryGame.session.selectedImages[this.id] + ".jpg";
+        if (MemoryGame.session.isCompleted === false) {
+            if (MemoryGame.session.imageRevealed === null) {
+                MemoryGame.session.imageRevealed = this.id;
+            } else if (this.id !== MemoryGame.session.imageRevealed) {
+                if (MemoryGame.session.selectedImages[MemoryGame.session.imageRevealed] === MemoryGame.session.selectedImages[this.id]) {
+                    $(".game-img").off("click", MemoryGame.revealImage);
+                    setTimeout((() => $(".game-img").on("click", MemoryGame.revealImage)), MemoryGame.session.hideImageLagTime);
+                    MemoryGame.session.goodAnswerCount++;
+                    MemoryGame.session.imageRevealed = null;
+                    console.log(this.id + " good: " + MemoryGame.session.goodAnswerCount);
                 } else {
-                    html.imagesRemoveEventListener();
-                    setTimeout(html.hideImage.bind(this), gameSession.hideImageLagTime);
-                    gameSession.wrongAnswerCount++;
-                    console.log(this.id + " wrong: " + gameSession.wrongAnswerCount);
+                    $(".game-img").off("click", MemoryGame.revealImage);
+                    setTimeout(MemoryGame.hideImage.bind(this), MemoryGame.session.hideImageLagTime);
+                    MemoryGame.session.wrongAnswerCount++;
+                    console.log(this.id + " wrong: " + MemoryGame.session.wrongAnswerCount);
                 }
             }
         }
-        if (gameSession.goodAnswerCount === gameSession.numImages) {
-            gameSession.isCompleted = true;
-            html.imagesRemoveEventListener();
+        if (MemoryGame.session.goodAnswerCount === MemoryGame.session.numImages) {
+            MemoryGame.session.isCompleted = true;
+            $(".game-img").off("click", MemoryGame.revealImage);
         }
-    },
+    };
 
-    hideImage: function () {
-        this.src = images.path + images.unknownImageName;
-        document.getElementById(gameSession.imageRevealed).src = images.path + images.unknownImageName;
-        html.imagesAddEventListener();
-        gameSession.imageRevealed = null;
-    },
+    MemoryGame.hideImage = function () {
+        this.src = MemoryGame.images.path + MemoryGame.images.unknownImageName;
+        $(`#${MemoryGame.session.imageRevealed}`).attr("src", MemoryGame.images.path + MemoryGame.images.unknownImageName);
+        $(".game-img").on("click", MemoryGame.revealImage);
+        MemoryGame.session.imageRevealed = null;
+    };
 
-    imagesAddEventListener: function () {
-        html.images.forEach(image => image.addEventListener("click", html.revealImage));
-    },
-
-    imagesRemoveEventListener: function () {
-        html.images.forEach(image => image.removeEventListener("click", html.revealImage));
-    },
-}
-
-let gameSession = {
-    numImages: 6,               // beginner mode
-    selectedImages: [],
-    imageRevealed: null,
-    hideImageLagTime: 2000,     // in ms
-    goodAnswerCount: 0,
-    wrongAnswerCount: 0,
-    isCompleted: false,
-
-    selectImagesRandomly: function (numInput) {
-        while (this.selectedImages.length < numInput) {
-            let rand = Math.floor(Math.random() * images.totalImagesAvailable) + 1;
-            if(this.selectedImages.indexOf(rand) === -1) this.selectedImages.push(rand);
+    MemoryGame.selectImagesRandomly = function (numInput) {
+        while (this.session.selectedImages.length < numInput) {
+            let rand = Math.floor(Math.random() * this.images.totalImagesAvailable) + 1;
+            if (this.session.selectedImages.indexOf(rand) === -1) this.session.selectedImages.push(rand);
         }
-    },
+    };
 
-    doubleImagesRandomly: function () {
-        this.selectedImages = this.selectedImages.concat(this.selectedImages);
-        this.shuffle(this.selectedImages);
-    },
+    MemoryGame.doubleImagesRandomly = function () {
+        this.session.selectedImages = this.session.selectedImages.concat(this.session.selectedImages);
+        this.shuffle(this.session.selectedImages);
+    };
 
-    shuffle: function (array) {
+    MemoryGame.shuffle = function (array) {
         array.sort(() => Math.random() - 0.5);
-    },
-};
+    };
 
-start();
+    MemoryGame.start();
+
+})();
