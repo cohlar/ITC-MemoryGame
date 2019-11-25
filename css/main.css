@@ -1,21 +1,140 @@
+* {
+    font-family: 'Open Sans', sans-serif;
+}
+
 body {
+    /* display: flex; */
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+header {
     display: flex;
+    align-items: center;
     justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 75px;
+    background-color: black;
+}
+
+header img {
+    height: 60px;
+    display: none;
+}
+
+@media only screen and (min-width: 550px) {
+    header {
+        justify-content: space-between;
+    }    
+    header img {
+        display: inline;
+    }
+}
+
+header .title {
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+header .title h1 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+header .title h2 {
+    font-size: 1.1em;
+    font-weight: 300;
+    margin: 0;
+}
+
+#score-container {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    height: 100px;
+    width: 100%;
+    background-color: rgba(200,200,200,.5);
+    border-bottom: 1px solid darkgray;
+}
+
+.score-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    flex-grow: 1;
+}
+
+@media only screen and (min-width: 360px) {
+    #score-container {
+        height: 75px;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    #score-container {
+        height: 50px;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    #score-container {
+        padding-left: calc( (100vw - 800px) / 2 );
+        padding-right: calc( (100vw - 800px) / 2 );
+    }
+}
+
+.count-container {
+    margin: 0 20px;
+}
+
+.count {
+    color: royalblue;
+    font-size: 1.2em;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+#new-game-btn {
+    font-size: 0.9em;
+    color: white;
+    background-color: royalblue;
+    border: 1px solid black;
+}
+
+#new-game-btn:focus {
+    outline: none;
 }
 
 #game-container {
     display: flex;
     justify-content: center;
+    width: 100%;
+    min-height: calc(100vh - 75px - 50px);
+}
+
+#game {
+    display: flex;
+    justify-content: space-evenly;
+    align-content: space-evenly;
     flex-wrap: wrap;
     max-width: 800px;
 }
 
 .game-img {
     box-sizing: border-box;
-    height: 150px;
-    width: 150px;
+    width: 19vw;
+    height: 19vw;
+    max-width: 150px;
+    max-height: 150px;
+    min-width: 80px;
+    min-height: 80px;
     border-radius: 50%;
-    margin: 20px;
+    margin: 10px;
     object-fit: cover;
     border: 2px solid rgba(200,200,200,0.8);
 }

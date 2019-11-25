@@ -25,7 +25,8 @@
             selectedImages: [],
             imageRevealed: null,
             hideImageLagTime: 2000,     // in ms
-            goodAnswerCount: 0,
+            score: 50,
+            rightAnswerCount: 0,
             wrongAnswerCount: 0,
             isCompleted: false,
         },
@@ -33,20 +34,16 @@
 
 
     MemoryGame.start = function () {
-        this.generateHtmlStructure();
-        this.generateImagesHTML();
+        this.generateHTML();
         $(".game-img").on("click", this.revealImage);
     };
 
-    MemoryGame.generateHtmlStructure = function () {
-        $("body").append('<div id="game-container"></div>');
-    };
-
-    MemoryGame.generateImagesHTML = function () {
+    MemoryGame.generateHTML = function () {
+        this.setScore();
         this.selectImagesRandomly(this.session.numImages);
         this.doubleImagesRandomly();
         this.session.selectedImages.forEach(function (imageName, index) {
-            $("#game-container").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" >`));
+            $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" >`));
         });
     };
 
@@ -59,18 +56,17 @@
                 if (MemoryGame.session.selectedImages[MemoryGame.session.imageRevealed] === MemoryGame.session.selectedImages[this.id]) {
                     $(".game-img").off("click", MemoryGame.revealImage);
                     setTimeout((() => $(".game-img").on("click", MemoryGame.revealImage)), MemoryGame.session.hideImageLagTime);
-                    MemoryGame.session.goodAnswerCount++;
+                    MemoryGame.session.rightAnswerCount++;
                     MemoryGame.session.imageRevealed = null;
-                    console.log(this.id + " good: " + MemoryGame.session.goodAnswerCount);
                 } else {
                     $(".game-img").off("click", MemoryGame.revealImage);
                     setTimeout(MemoryGame.hideImage.bind(this), MemoryGame.session.hideImageLagTime);
                     MemoryGame.session.wrongAnswerCount++;
-                    console.log(this.id + " wrong: " + MemoryGame.session.wrongAnswerCount);
                 }
+                MemoryGame.setScore();
             }
         }
-        if (MemoryGame.session.goodAnswerCount === MemoryGame.session.numImages) {
+        if (MemoryGame.session.rightAnswerCount === MemoryGame.session.numImages) {
             MemoryGame.session.isCompleted = true;
             $(".game-img").off("click", MemoryGame.revealImage);
         }
@@ -97,6 +93,13 @@
 
     MemoryGame.shuffle = function (array) {
         array.sort(() => Math.random() - 0.5);
+    };
+
+    MemoryGame.setScore = function () {
+        this.session.score = Math.max(0, 50 + this.session.rightAnswerCount * 10 - this.session.wrongAnswerCount * 5);
+        $("#score").html(this.session.score);
+        $("#right-answer-count").html(this.session.rightAnswerCount);
+        $("#wrong-answer-count").html(this.session.wrongAnswerCount);
     };
 
     MemoryGame.start();

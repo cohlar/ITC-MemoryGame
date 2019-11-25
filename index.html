@@ -6,10 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ITC Bootcampers Oct 2019 - Memory Game</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
+    <header>
+        <img src="images/itc-logo.png">
+        <div class="title">
+            <h1>Memory Game</h1>
+            <h2>2019 Oct Bootcampers Edition</h2>
+        </div>
+        <img src="images/itc-logo.png">
+    </header>
+
+    <section id="score-container">
+        <div class="score-row">
+            <div class="count-container">
+                <span class="count-title">Right Answers: </span>
+                <span id="right-answer-count" class="count"></span>
+            </div>
+            <div class="count-container">
+                <span class="count-title">Wrong Answers: </span>
+                <span id="wrong-answer-count" class="count"></span>
+            </div>
+        </div>
+        <div class="score-row">
+            <div class="count-container">
+                <span class="score-title">Score: </span>
+                <span id="score" class="count"></span>
+            </div>
+            <button id="new-game-btn" class="count-container">New Game</button>
+        </div>
+    </section>
+
+    <section id="game-container">
+        <div id="game"></div>
+    </section>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="js/main.js"></script>
