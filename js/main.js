@@ -22,20 +22,36 @@
 
         session: {
             numImages: 6,               // beginner mode
-            selectedImages: [],
-            imageRevealed: null,
             hideImageLagTime: 2000,     // in ms
-            score: 50,
-            rightAnswerCount: 0,
-            wrongAnswerCount: 0,
+            selectedImages: undefined,
+            imageRevealed: undefined,
+            startScore: 50,
+            score: undefined,
+            rightAnswerCount: undefined,
+            wrongAnswerCount: undefined,
             isCompleted: false,
         },
     };
 
+    MemoryGame.setNewGameButton = function () {
+        $("#new-game-btn").on("click", this.start);
+    };
 
     MemoryGame.start = function () {
-        this.generateHTML();
-        $(".game-img").on("click", this.revealImage);
+        MemoryGame.session.setToDefault();
+        MemoryGame.generateHTML();
+        $(".game-img").on("click", MemoryGame.revealImage);
+    };
+    
+    MemoryGame.session.setToDefault = function () {
+        $("#game > img").remove();
+        this.selectedImages = [];
+        this.imageRevealed = null;
+        this.score = this.startScore;
+        this.rightAnswerCount = 0;
+        this.wrongAnswerCount = 0;
+        this.isCompleted = false;
+
     };
 
     MemoryGame.generateHTML = function () {
@@ -102,6 +118,7 @@
         $("#wrong-answer-count").html(this.session.wrongAnswerCount);
     };
 
+    MemoryGame.setNewGameButton();
     MemoryGame.start();
 
 })();
