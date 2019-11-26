@@ -3,7 +3,6 @@
 }
 
 body {
-    /* display: flex; */
     flex-direction: column;
     align-items: center;
     margin: 0;
@@ -153,14 +152,6 @@ header .title h2 {
     }
 }
 
-/* 
-@media only screen and (max-height: 600px) and (orientation: portrait) {
-    .game-img {
-        width: 18vw;
-        height: 18vw;
-    }
-} */
-
 .modal-background {
     display: flex;
     justify-content: center;
@@ -180,6 +171,7 @@ header .title h2 {
     justify-content: space-evenly;
     align-items: center;
     text-align: center;
+    position: absolute;
     min-height: 50vh;
     min-width: 50vw;
     max-height: 90vh;
@@ -188,6 +180,17 @@ header .title h2 {
     background-color: white;
     z-index: 12;
     box-shadow: 10px 10px 5px 0px rgba(30,30,30,0.75);
+}
+
+#close-modal {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 6px 12px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
 #modal h1, #modal p {
