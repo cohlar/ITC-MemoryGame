@@ -7,6 +7,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 0;
+    height: 100vh;
 }
 
 header {
@@ -62,22 +63,28 @@ header .title h2 {
     border-bottom: 1px solid darkgray;
 }
 
-.score-row {
+#game-container {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    flex-grow: 1;
+    justify-content: center;
+    width: 100%;
+    min-height: calc(100vh - 75px - 100px);
 }
 
 @media only screen and (min-width: 360px) {
     #score-container {
         height: 75px;
     }
+    #game-container {
+        min-height: calc(100vh - 75px - 75px);
+    }
 }
 
 @media only screen and (min-width: 600px) {
     #score-container {
         height: 50px;
+    }
+    #game-container {
+        min-height: calc(100vh - 75px - 50px);
     }
 }
 
@@ -86,6 +93,13 @@ header .title h2 {
         padding-left: calc( (100vw - 800px) / 2 );
         padding-right: calc( (100vw - 800px) / 2 );
     }
+}
+
+.score-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    flex-grow: 1;
 }
 
 .count-container {
@@ -108,13 +122,6 @@ header .title h2 {
 
 .new-game-btn:focus {
     outline: none;
-}
-
-#game-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    min-height: calc(100vh - 75px - 50px);
 }
 
 #game {
