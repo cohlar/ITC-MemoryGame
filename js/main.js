@@ -1,6 +1,3 @@
-// STAR
-// win modal with button for new game
-
 // GEEK
 // add game reset function
 // add header with logo and button to reset
@@ -40,6 +37,7 @@
         MemoryGame.session.setToDefault();
         MemoryGame.generateHTML();
         $(".game-img").on("click", MemoryGame.revealImage);
+        // $(window).on("resize", MemoryGame.sizeImages);
     };
 
     MemoryGame.session.setToDefault = function () {
@@ -60,6 +58,7 @@
         this.session.selectedImages.forEach(function (imageName, index) {
             $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" >`));
         });
+        // this.sizeImages();
     };
 
     MemoryGame.revealImage = function () {
@@ -87,6 +86,21 @@
             // $(".game-img").off("click", MemoryGame.revealImage);
         }
     };
+
+    // MemoryGame.sizeImages = function () {
+    //     const gameWidth = window.innerWidth;
+    //     const gameHeight = window.innerHeight - parseInt($("header").css("height")) - parseInt($("#score-container").css("height"));
+
+    //     console.log(gameWidth, gameHeight);
+        
+    //     if (gameHeight < gameWidth) {
+    //         $(".game-img").css({
+    //             "height": gameHeight/4 + "px",
+    //             "width": gameHeight/4 + "px",
+                
+    //         });
+    //     }
+    // };
 
     MemoryGame.hideImage = function () {
         this.src = MemoryGame.images.path + MemoryGame.images.unknownImageName;

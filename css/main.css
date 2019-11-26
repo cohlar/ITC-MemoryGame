@@ -131,13 +131,28 @@ header .title h2 {
     height: 19vw;
     max-width: 150px;
     max-height: 150px;
-    min-width: 80px;
-    min-height: 80px;
+    min-width: 50px;
+    min-height: 50px;
     border-radius: 50%;
     margin: 10px;
     object-fit: cover;
     border: 2px solid rgba(200,200,200,0.8);
 }
+
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+    .game-img {
+        width: 12vw;
+        height: 12vw;
+    }
+}
+
+/* 
+@media only screen and (max-height: 600px) and (orientation: portrait) {
+    .game-img {
+        width: 18vw;
+        height: 18vw;
+    }
+} */
 
 .modal-background {
     display: flex;
