@@ -1,6 +1,7 @@
 // GEEK
 // Add the ability to change the game theme (both images and card pattern).
 // Make the basic layout the “easy” level, add levels medium and hard (with more 18 and 24 cards).
+// Add modal for new game without complete
 // NINJA
 // Add flipping animation effect for the card. (and for the modal...)
 // Add a high score functionality, that will save the name of the person with the least amounts of wrong guesses.
@@ -131,7 +132,7 @@
         try {
             let response = await $.ajax({
                 method: "GET",
-                url: "http://api.giphy.com/v1/gifs/random",
+                url: "https://api.giphy.com/v1/gifs/random",
                 dataType: "json",
                 data: {
                     api_key: "rbBrEcYnKrJXV3ye6yYewwC1SPbC3ZPj",
