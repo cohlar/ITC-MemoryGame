@@ -99,14 +99,14 @@ header .title h2 {
     margin-left: 5px;
 }
 
-#new-game-btn {
+.new-game-btn {
     font-size: 0.9em;
     color: white;
     background-color: royalblue;
     border: 1px solid black;
 }
 
-#new-game-btn:focus {
+.new-game-btn:focus {
     outline: none;
 }
 
@@ -137,4 +137,60 @@ header .title h2 {
     margin: 10px;
     object-fit: cover;
     border: 2px solid rgba(200,200,200,0.8);
+}
+
+.modal-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: rgba(0,0,0,.7);
+}
+
+#modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    min-height: 50vh;
+    min-width: 50vw;
+    max-height: 90vh;
+    max-width: 90vw;
+    padding: 30px;
+    background-color: white;
+    z-index: 12;
+    box-shadow: 10px 10px 5px 0px rgba(30,30,30,0.75);
+}
+
+#modal h1, #modal p {
+    margin: 0;
+}
+
+#modal p {
+    font-size: 1.2em;
+}
+
+#modal img {
+    max-width: 80vw;
+    max-height: 50vh;
+    height: auto;
+}
+
+@media only screen and (min-height: 500px) {
+    #modal img {
+        height: 200px;
+        width: auto;
+    }
+}
+
+#final-score {
+    color: royalblue;
+    font-size: 1.5em;
+    font-weight: 700;
 }

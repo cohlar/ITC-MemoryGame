@@ -1,6 +1,4 @@
 // STAR
-// add game reset function
-// add header with logo and button to reset
 // win modal with button for new game
 
 // GEEK
@@ -13,7 +11,7 @@
 (function () {
 
     let MemoryGame = {
-        
+
         images: {
             path: "images/",
             unknownImageName: "0.jpg",
@@ -33,16 +31,17 @@
         },
     };
 
-    MemoryGame.setNewGameButton = function () {
-        $("#new-game-btn").on("click", this.start);
-    };
+    // MemoryGame.setNewGameButton = function () {
+    //     $(".new-game-btn").on("click", this.start);
+    // };
 
     MemoryGame.start = function () {
+        MemoryGame.removeModal();
         MemoryGame.session.setToDefault();
         MemoryGame.generateHTML();
         $(".game-img").on("click", MemoryGame.revealImage);
     };
-    
+
     MemoryGame.session.setToDefault = function () {
         $("#game > img").remove();
         this.selectedImages = [];
@@ -70,8 +69,8 @@
                 MemoryGame.session.imageRevealed = this.id;
             } else if (this.id !== MemoryGame.session.imageRevealed) {
                 if (MemoryGame.session.selectedImages[MemoryGame.session.imageRevealed] === MemoryGame.session.selectedImages[this.id]) {
-                    $(".game-img").off("click", MemoryGame.revealImage);
-                    setTimeout((() => $(".game-img").on("click", MemoryGame.revealImage)), MemoryGame.session.hideImageLagTime);
+                    // $(".game-img").off("click", MemoryGame.revealImage);
+                    // setTimeout((() => $(".game-img").on("click", MemoryGame.revealImage)), MemoryGame.session.hideImageLagTime);
                     MemoryGame.session.rightAnswerCount++;
                     MemoryGame.session.imageRevealed = null;
                 } else {
@@ -83,8 +82,9 @@
             }
         }
         if (MemoryGame.session.rightAnswerCount === MemoryGame.session.numImages) {
+            MemoryGame.displayWinModal();
             MemoryGame.session.isCompleted = true;
-            $(".game-img").off("click", MemoryGame.revealImage);
+            // $(".game-img").off("click", MemoryGame.revealImage);
         }
     };
 
@@ -118,7 +118,54 @@
         $("#wrong-answer-count").html(this.session.wrongAnswerCount);
     };
 
-    MemoryGame.setNewGameButton();
+    MemoryGame.displayWinModal = function () {
+        this.createModal();
+        $("#modal").append(`
+            <h1>Congratulations, you won!</h1>
+            <p>
+                Your final score is <span id="final-score">100</span>
+            </p>
+            <button class="new-game-btn">Start a New Game</button>
+            <img id="win-gif">
+        `);
+        $(".new-game-btn").on("click", this.start);
+        this.displayRandomGif();
+    };
+    
+    MemoryGame.createModal = function () {
+        $("body").append(`
+            <div class="modal-background">
+                <div id="modal">
+                </div>
+            </div>
+        `);
+    };
+
+    MemoryGame.removeModal = function () {
+        $(".modal-background").remove();
+    };
+
+    MemoryGame.displayRandomGif = async function () {
+        try {
+            let response = await $.ajax({
+                method: "GET",
+                url: "http://api.giphy.com/v1/gifs/random",
+                dataType: "json",
+                data: {
+                    api_key: "rbBrEcYnKrJXV3ye6yYewwC1SPbC3ZPj",
+                    tag: "happy win",
+                },
+            }).promise();
+            $("#win-gif").attr("src", response.data.fixed_height_downsampled_url);
+        }
+        catch (error) {
+            $("#win-gif").attr("src", "https://media3.giphy.com/media/l3q2Z6S6n38zjPswo/200_d.gif");
+        }
+    }
+
+    // MemoryGame.displayWinModal();
+
+    $(".new-game-btn").on("click", MemoryGame.start);
     MemoryGame.start();
 
 })();
