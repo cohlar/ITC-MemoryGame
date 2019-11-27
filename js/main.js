@@ -8,7 +8,7 @@
 
 "use strict";
 
-(function () {
+// (function () {
 
     let MemoryGame = {
 
@@ -19,7 +19,7 @@
         },
 
         session: {
-            numImages: 6,               // beginner mode
+            numImages: 6,       // beginner mode
             hideImageLagTime: 2000,     // in ms
             displayModalLagTime: 1000,  // in ms
             selectedImages: undefined,
@@ -32,11 +32,13 @@
         },
     };
 
-    MemoryGame.start = function () {
-        MemoryGame.removeModal();
+    MemoryGame.init = function () {
         MemoryGame.session.setToDefault();
         MemoryGame.generateHTML();
+        MemoryGame.styleImages();
         $(".game-img").on("click", MemoryGame.revealImage);
+        $(".new-game-btn").on("click", MemoryGame.startNewGame);
+        $(window).on("resize", MemoryGame.styleImages);
     };
 
     MemoryGame.session.setToDefault = function () {
@@ -52,11 +54,43 @@
 
     MemoryGame.generateHTML = function () {
         this.setScore();
-        this.selectImagesRandomly(this.session.numImages);
-        this.doubleImagesRandomly();
+        this.generateImagesRandomly(this.session.numImages);
         this.session.selectedImages.forEach(function (imageName, index) {
-            $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" >`));
+            $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" />`));
         });
+    };
+    
+    MemoryGame.styleImages = function () {
+        const gameContainer = {
+            width: $("#game-container").width(),
+            height: $("#game-container").height(),
+        };
+        const imgSize = ( gameContainer.width + gameContainer.height ) / ( MemoryGame.session.numImages * 2 );
+        const imgMargin = gameContainer.width / 100;
+        $(".game-img").css({
+            "width": imgSize,
+            "height": imgSize,
+            "margin": imgMargin,
+        });
+        switch (MemoryGame.session.numImages) {
+            case 6:
+                if (gameContainer.width >= (imgSize + imgMargin*2)*5 && gameContainer.width < (imgSize + imgMargin*2)*6) {
+                    $("#game").width((imgSize + imgMargin*2)*4);
+                } else if (gameContainer.width >= (imgSize + imgMargin*2)*7) {
+                    $("#game").width((imgSize + imgMargin*2)*6);
+                } else {
+                    $("#game").width(gameContainer.width);
+                }
+                break;
+            case 8:
+
+                console.log(123);
+                break;
+            case 10:
+
+                console.log(456);
+                break;
+        }
     };
 
     MemoryGame.revealImage = function () {
@@ -90,20 +124,23 @@
         MemoryGame.session.imageRevealed = null;
     };
 
-    MemoryGame.selectImagesRandomly = function (numInput) {
+    MemoryGame.generateImagesRandomly = function (numInput) {
         while (this.session.selectedImages.length < numInput) {
             let rand = Math.floor(Math.random() * this.images.totalImagesAvailable) + 1;
             if (this.session.selectedImages.indexOf(rand) === -1) this.session.selectedImages.push(rand);
         }
+        this.session.selectedImages = this.doubleArrayRandomly(this.session.selectedImages);
     };
 
-    MemoryGame.doubleImagesRandomly = function () {
-        this.session.selectedImages = this.session.selectedImages.concat(this.session.selectedImages);
-        this.shuffle(this.session.selectedImages);
+    MemoryGame.doubleArrayRandomly = function (array) {
+        array = array.concat(array);
+        array = this.shuffle(array);
+        return array;
     };
 
     MemoryGame.shuffle = function (array) {
         array.sort(() => Math.random() - 0.5);
+        return array;
     };
 
     MemoryGame.setScore = function () {
@@ -112,6 +149,49 @@
         $("#right-answer-count").html(this.session.rightAnswerCount);
         $("#wrong-answer-count").html(this.session.wrongAnswerCount);
     };
+    
+    MemoryGame.startNewGame = function () {
+        console.log(this);
+        switch (this.id) {
+            case "level1-btn":
+                MemoryGame.session.numImages = 6;
+                break;
+            case "level2-btn":
+                MemoryGame.session.numImages = 8;
+                break;
+            case "level3-btn":
+                MemoryGame.session.numImages = 10;
+                break;
+        }
+        console.log(MemoryGame.session.numImages);
+        MemoryGame.removeModal();
+        MemoryGame.session.setToDefault();
+        MemoryGame.generateHTML();
+        MemoryGame.styleImages();
+        $(".game-img").on("click", MemoryGame.revealImage);
+        // $(".new-game-btn").on("click", MemoryGame.startNewGame);
+        $(window).on("resize", MemoryGame.styleImages);
+    };
+
+    // MemoryGame.displayStartModal = function () {
+    //     MemoryGame.createModal();
+    //     $("#modal").append(`
+    //         <h1>Welcome to the ITC Memory Game - 2019 Oct Bootcampers Edition!</h1>
+
+    //         <img class="modal-gif">
+
+    //         <p>
+    //             Please select the desired level of difficulty:
+    //         </p>
+    //         <div>
+    //         <button id="level1-btn" class="new-game-btn">Beginner</button>
+    //         <button id="level2-btn" class="new-game-btn">Intermediate</button>
+    //         <button id="level3-btn" class="new-game-btn">Advanced</button>
+    //         </div>
+    //     `);
+    //     $(".new-game-btn").on("click", MemoryGame.start);
+    //     MemoryGame.displayRandomGif("welcome");
+    // };
 
     MemoryGame.displayWinModal = function () {
         MemoryGame.createModal();
@@ -121,14 +201,14 @@
                 Your final score is <span id="final-score"></span>
             </p>
             <button class="new-game-btn">Start a New Game</button>
-            <img id="win-gif">
+            <img class="modal-gif">
         `);
         $("#final-score").html(MemoryGame.session.score);
-        $(".new-game-btn").on("click", MemoryGame.start);
-        MemoryGame.displayRandomGif();
+        $(".new-game-btn").on("click", MemoryGame.startNewGame);
+        MemoryGame.displayRandomGif("happy win");
     };
 
-    MemoryGame.displayRandomGif = async function () {
+    MemoryGame.displayRandomGif = async function (inputTag) {
         try {
             let response = await $.ajax({
                 method: "GET",
@@ -136,16 +216,16 @@
                 dataType: "json",
                 data: {
                     api_key: "rbBrEcYnKrJXV3ye6yYewwC1SPbC3ZPj",
-                    tag: "happy win",
+                    tag: inputTag,
                 },
             }).promise();
-            $("#win-gif").attr("src", response.data.fixed_height_downsampled_url);
+            $(".modal-gif").attr("src", response.data.fixed_height_downsampled_url);
         }
         catch (error) {
-            $("#win-gif").attr("src", "https://media3.giphy.com/media/l3q2Z6S6n38zjPswo/200_d.gif");
+            $(".modal-gif").attr("src", "https://media3.giphy.com/media/l3q2Z6S6n38zjPswo/200_d.gif");
         }
     }
-    
+
     MemoryGame.createModal = function () {
         $("body").append(`
             <div class="modal-background">
@@ -161,7 +241,7 @@
         $(".modal-background").remove();
     };
 
-    $(".new-game-btn").on("click", MemoryGame.start);
-    MemoryGame.start();
+    MemoryGame.init();
+    // MemoryGame.displayStartModal();
 
-})();
+// })();
