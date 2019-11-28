@@ -1,7 +1,5 @@
 // GEEK
 // Add the ability to change the game theme (both images and card pattern).
-// Make the basic layout the “easy” level, add levels medium and hard (with more 18 and 24 cards).
-// Add modal for new game without complete
 // NINJA
 // Add flipping animation effect for the card. (and for the modal...)
 // Add a high score functionality, that will save the name of the person with the least amounts of wrong guesses.
@@ -15,7 +13,10 @@ window.onload = function () {
         images: {
             path: "images/",
             unknownImageName: "0.jpg",
-            totalImagesAvailable: 34,   // number of bootcampers in cohort Oct 2019
+            totalImagesAvailable: {
+                bootcamp: 34,   // number of bootcampers in cohort Oct 2019
+                larry: 15,
+            }
         },
 
         session: {
@@ -28,6 +29,7 @@ window.onload = function () {
             score: undefined,
             rightAnswerCount: undefined,
             wrongAnswerCount: undefined,
+            mode: "bootcamp",
             isCompleted: false,
         },
     };
@@ -125,13 +127,19 @@ window.onload = function () {
     };
 
     MemoryGame.revealImage = function () {
-        this.src = MemoryGame.images.path + MemoryGame.session.selectedImages[this.id] + ".jpg";
+        $(".game-img.last-revealed").toggleClass("last-revealed");
+        const imagePath = MemoryGame.images.path + MemoryGame.session.mode + "/";
+        this.src = imagePath + MemoryGame.session.selectedImages[this.id] + ".jpg";
+        $(this).toggleClass("last-revealed");
+        $(this).toggleClass("active");
         if (MemoryGame.session.isCompleted === false) {
             if (MemoryGame.session.imageRevealed === null) {
                 MemoryGame.session.imageRevealed = this.id;
             } else if (this.id !== MemoryGame.session.imageRevealed) {
                 if (MemoryGame.session.selectedImages[MemoryGame.session.imageRevealed] === MemoryGame.session.selectedImages[this.id]) {
                     MemoryGame.session.rightAnswerCount++;
+                    $(".game-img.active").toggleClass("matched");
+                    $(".game-img.active").toggleClass("active");
                     MemoryGame.session.imageRevealed = null;
                 } else {
                     $(".game-img").off("click", MemoryGame.revealImage);
@@ -142,22 +150,25 @@ window.onload = function () {
             }
         }
         if (MemoryGame.session.rightAnswerCount === MemoryGame.session.numImages) {
-            setTimeout(MemoryGame.displayWinModal, MemoryGame.session.displayModalLagTime);
+            // setTimeout(MemoryGame.displayWinModal, MemoryGame.session.displayModalLagTime);
+            MemoryGame.displayWinModal();
             MemoryGame.session.isCompleted = true;
             $(".game-img").off("click", MemoryGame.revealImage);
         }
     };
 
     MemoryGame.hideImage = function () {
-        this.src = MemoryGame.images.path + MemoryGame.images.unknownImageName;
-        $(`#${MemoryGame.session.imageRevealed}`).attr("src", MemoryGame.images.path + MemoryGame.images.unknownImageName);
+        console.log(MemoryGame.images.path + MemoryGame.images.unknownImageName);
+        $(".game-img.active").attr("src", MemoryGame.images.path + MemoryGame.images.unknownImageName);
+        $(".game-img.active").toggleClass("active");
         $(".game-img").on("click", MemoryGame.revealImage);
         MemoryGame.session.imageRevealed = null;
     };
 
     MemoryGame.generateImagesRandomly = function (numInput) {
+        const imagesAvailable = (this.session.mode === "bootcamp") ? this.images.totalImagesAvailable.bootcamp : this.images.totalImagesAvailable.larry;
         while (this.session.selectedImages.length < numInput) {
-            let rand = Math.floor(Math.random() * this.images.totalImagesAvailable) + 1;
+            let rand = Math.floor(Math.random() * imagesAvailable) + 1;
             if (this.session.selectedImages.indexOf(rand) === -1) this.session.selectedImages.push(rand);
         }
         this.session.selectedImages = this.doubleArrayRandomly(this.session.selectedImages);
@@ -228,18 +239,23 @@ window.onload = function () {
         $("#modal").append(`
             <h1>Congratulations, you won!</h1>
             <p>
-                Your final score is <span id="final-score"></span>
+                Your final score is <span id="final-score"></span> and you unleashed a <strong>new game mode!</strong>
+                <br />
+                Play again and you'll have a nice surprise...
             </p>
             <div id="modal-buttons">
                 <button name="level1-btn" class="new-game-btn new-game active">Newb</button>
                 <button name="level2-btn" class="new-game-btn new-game">Geek</button>
                 <button name="level3-btn" class="new-game-btn new-game">Ninja</button>
             </div>
-            <img class="modal-gif">
+            <div class="modal-gif-container loading">
+                <img class="modal-gif">
+            </div>
         `);
         $("#final-score").html(MemoryGame.session.score);
         $(".new-game-btn").on("click", MemoryGame.startNewGame);
         MemoryGame.displayRandomGif("happy win");
+        MemoryGame.session.mode = "larry";
     };
 
     MemoryGame.displayRandomGif = async function (inputTag) {
@@ -258,6 +274,7 @@ window.onload = function () {
         catch (error) {
             $(".modal-gif").attr("src", "https://media3.giphy.com/media/l3q2Z6S6n38zjPswo/200_d.gif");
         }
+        $(".modal-gif-container.loading").toggleClass("loading");
     }
 
     MemoryGame.createModal = function () {

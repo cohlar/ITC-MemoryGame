@@ -166,6 +166,16 @@ header .title h2 {
     }
 } */
 
+.game-img.last-revealed {
+    animation-name: scaleout;
+    animation-duration: 1s;
+}
+
+.game-img.matched {
+    animation-name: pulse;
+    animation-duration: 1s;
+}
+
 .modal-background {
     display: flex;
     justify-content: center;
@@ -177,6 +187,8 @@ header .title h2 {
     left: 0;
     z-index: 1;
     background-color: rgba(0,0,0,.7);
+    animation-name: fadein;
+    animation-duration: 1s;
 }
 
 #modal {
@@ -194,6 +206,8 @@ header .title h2 {
     background-color: white;
     z-index: 12;
     box-shadow: 10px 10px 5px 0px rgba(30,30,30,0.75);
+    animation-name: scaleout;
+    animation-duration: 1s;
 }
 
 #close-modal {
@@ -221,6 +235,14 @@ header .title h2 {
     height: auto;
 }
 
+.modal-gif-container.loading {
+    background-image: url("../images/loader.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    min-width: 80px;
+    min-height: 80px;
+}
+
 @media only screen and (min-height: 500px) {
     #modal img {
         height: 200px;
@@ -229,7 +251,52 @@ header .title h2 {
 }
 
 #final-score {
-    color: brown;
-    font-size: 1.5em;
+    margin: 0 8px;
+    color: rgb(228,61,42);
+    font-size: 1.6em;
     font-weight: 700;
+}
+
+#modal strong {
+    color: rgb(228,61,42);
+    font-size: 1.2em;
+}
+
+@keyframes fadein {
+    from {
+        background-color: rgba(0,0,0,0);
+    }
+    to {
+        background-color: rgba(0,0,0,0.7);
+    }
+}
+
+@keyframes scaleout {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes slidein {
+    from {
+        margin-left: 100%;
+    }
+    to {
+        margin-left: 0%;
+    }
 }
