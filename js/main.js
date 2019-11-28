@@ -1,10 +1,3 @@
-// fix scoring bug
-// update scoring mechanism
-// update title for Larry mode
-
-// NINJA
-// Add a high score functionality, that will save the name of the person with the least amounts of wrong guesses.
-
 "use strict";
 
 window.onload = function () {
@@ -221,7 +214,7 @@ window.onload = function () {
     MemoryGame.removeModal = function () {
         $(".modal-background").remove();
     };
-    
+
     MemoryGame.styleImages = function () {
         const gameContainer = {
             width: $("#game-container").width(),
