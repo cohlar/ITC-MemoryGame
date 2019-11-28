@@ -8,7 +8,7 @@
 
 "use strict";
 
-// (function () {
+window.onload = function () {
 
     let MemoryGame = {
 
@@ -59,38 +59,69 @@
             $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" />`));
         });
     };
-    
+
     MemoryGame.styleImages = function () {
         const gameContainer = {
             width: $("#game-container").width(),
             height: $("#game-container").height(),
         };
-        const imgSize = ( gameContainer.width + gameContainer.height ) / ( MemoryGame.session.numImages * 2 );
-        const imgMargin = gameContainer.width / 100;
+        let gameWidth = gameContainer.width;
+        let imgMargin = gameContainer.width / 80;
+        let imgSize = (gameContainer.width + gameContainer.height - 2 * imgMargin) / (MemoryGame.session.numImages * 2);
+
+        switch (MemoryGame.session.numImages) {
+            case 6:
+                if (gameContainer.width >= (imgSize + imgMargin * 2) * 6) {
+                    imgMargin = (gameContainer.width / 6 - imgSize) / 2;
+                } else if (gameContainer.width >= (imgSize + imgMargin * 2) * 5 && gameContainer.width < (imgSize + imgMargin * 2) * 6) {
+                    gameWidth = (imgSize + imgMargin * 2) * 4;
+                }
+                break;
+            case 9:
+                if (gameContainer.width >= (imgSize + imgMargin * 2) * 9) {
+                    imgSize = (gameContainer.width / 6 - 2 * imgMargin)*.9;
+                    if (gameContainer.height < (imgSize + imgMargin * 2) * 3) {
+                        imgSize = gameContainer.width / 9 - 2 * imgMargin;
+                    }
+                } else if (gameContainer.width >= (imgSize + imgMargin * 2) * 9) {
+                    imgMargin = (gameContainer.width / 9 - imgSize) / 2;
+                } else if (gameContainer.width >= (imgSize + imgMargin * 2) * 7 && gameContainer.width < (imgSize + imgMargin * 2) * 9) {
+                    imgMargin = gameContainer.width / 50;
+                    imgSize = Math.min(gameContainer.width / 6 - 2 * imgMargin, gameContainer.height / 3 - 2 * imgMargin);
+                } else if (gameContainer.width >= (imgSize + imgMargin * 2) * 4 && gameContainer.width < (imgSize + imgMargin * 2) * 6) {
+                    imgMargin = gameContainer.width / 30;
+                    imgSize = Math.min(gameContainer.width / 3 - 2 * imgMargin, gameContainer.height / 6 - 2 * imgMargin);
+                }
+                break;
+            case 12:
+                if (gameContainer.width >= (imgSize + imgMargin * 2) * 9) {
+                    imgSize = gameContainer.width / 8 - 2 * imgMargin;
+                    if (gameContainer.height < (imgSize + imgMargin * 2) * 3) {
+                        imgSize = gameContainer.width / 12 - 2 * imgMargin;
+                    }
+                }
+                else if (gameContainer.width >= (imgSize + imgMargin * 2) * 7 && gameContainer.width < (imgSize + imgMargin * 2) * 8) {
+                    if (gameContainer.height >= (imgSize + imgMargin * 2) * 4) {
+                        imgSize = gameContainer.width / 6 - 2 * imgMargin;
+                    } else {
+                        imgSize = gameContainer.width / 12 - 2 * imgMargin;
+                    }
+                }
+                else if (gameContainer.width >= (imgSize + imgMargin * 2) * 5 && gameContainer.width < (imgSize + imgMargin * 2) * 6) {
+                    if (gameContainer.height >= (imgSize + imgMargin * 2) * 4) {
+                        imgSize = gameContainer.width / 6 - 2 * imgMargin;
+                    } else {
+                        imgSize = gameContainer.width / 12 - 2 * imgMargin;
+                    }
+                }
+                break;
+        }
+        $("#game").width(gameWidth);
         $(".game-img").css({
             "width": imgSize,
             "height": imgSize,
             "margin": imgMargin,
         });
-        switch (MemoryGame.session.numImages) {
-            case 6:
-                if (gameContainer.width >= (imgSize + imgMargin*2)*5 && gameContainer.width < (imgSize + imgMargin*2)*6) {
-                    $("#game").width((imgSize + imgMargin*2)*4);
-                } else if (gameContainer.width >= (imgSize + imgMargin*2)*7) {
-                    $("#game").width((imgSize + imgMargin*2)*6);
-                } else {
-                    $("#game").width(gameContainer.width);
-                }
-                break;
-            case 8:
-
-                console.log(123);
-                break;
-            case 10:
-
-                console.log(456);
-                break;
-        }
     };
 
     MemoryGame.revealImage = function () {
@@ -149,28 +180,27 @@
         $("#right-answer-count").html(this.session.rightAnswerCount);
         $("#wrong-answer-count").html(this.session.wrongAnswerCount);
     };
-    
+
     MemoryGame.startNewGame = function () {
-        console.log(this);
-        switch (this.id) {
+        $(".new-game-btn.active").toggleClass("active");
+        $(`[name ="${this.name}"]`).toggleClass("active");
+        switch (this.name) {
             case "level1-btn":
                 MemoryGame.session.numImages = 6;
                 break;
             case "level2-btn":
-                MemoryGame.session.numImages = 8;
+                MemoryGame.session.numImages = 9;
                 break;
             case "level3-btn":
-                MemoryGame.session.numImages = 10;
+                MemoryGame.session.numImages = 12;
                 break;
         }
-        console.log(MemoryGame.session.numImages);
         MemoryGame.removeModal();
         MemoryGame.session.setToDefault();
         MemoryGame.generateHTML();
         MemoryGame.styleImages();
         $(".game-img").on("click", MemoryGame.revealImage);
         // $(".new-game-btn").on("click", MemoryGame.startNewGame);
-        $(window).on("resize", MemoryGame.styleImages);
     };
 
     // MemoryGame.displayStartModal = function () {
@@ -200,7 +230,11 @@
             <p>
                 Your final score is <span id="final-score"></span>
             </p>
-            <button class="new-game-btn">Start a New Game</button>
+            <div id="modal-buttons">
+                <button name="level1-btn" class="new-game-btn new-game active">Newb</button>
+                <button name="level2-btn" class="new-game-btn new-game">Geek</button>
+                <button name="level3-btn" class="new-game-btn new-game">Ninja</button>
+            </div>
             <img class="modal-gif">
         `);
         $("#final-score").html(MemoryGame.session.score);
@@ -244,4 +278,4 @@
     MemoryGame.init();
     // MemoryGame.displayStartModal();
 
-// })();
+};
