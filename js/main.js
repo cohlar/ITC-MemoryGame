@@ -149,15 +149,14 @@ window.onload = function () {
         return array;
     };
 
-    // Generates and displays win modal
+    // Generates and displays modal when game is won
     MemoryGame.displayWinModal = function () {
         MemoryGame.createModal();
         $("#modal").append(`
             <h1>Congratulations, you won!</h1>
             <p>
-                Your final score is <span id="final-score"></span> and you unlocked a <strong>special game edition!</strong>
-                <br />
-                Play again and you'll have a pleasant surprise...
+                Your final score is <span id="final-score"></span>
+                ${(MemoryGame.session.edition === "Larry") ? "" : "and you unlocked a <strong>special game edition!</strong><br />Play again and you'll have a pleasant surprise..."}
             </p>
             <div id="modal-buttons">
                 <button name="level1-btn" class="new-game-btn new-game">Newb</button>
@@ -174,15 +173,16 @@ window.onload = function () {
         MemoryGame.session.edition = "Larry";
     };
 
-    // Generates and displays lose modal
+    // Generates and displays modal when game is lost
     MemoryGame.displayLoseModal = function () {
         MemoryGame.createModal();
         $("#modal").append(`
             <h1>You lost you loser!</h1>
             <p>
-                Your reached a score of <span id="final-score"></span>
+                Your reached the laughable score of <span id="final-score"></span>
                 <br />
                 You're welcome to try again...
+                ${(MemoryGame.session.edition === "Larry") ? "but you're back to the original edition" : ""}
             </p>
             <div id="modal-buttons">
                 <button name="level1-btn" class="new-game-btn new-game">Newb</button>
@@ -196,6 +196,7 @@ window.onload = function () {
         $("#final-score").html(MemoryGame.session.score);
         $(".new-game-btn").on("click", MemoryGame.startNewGame);
         MemoryGame.displayRandomGif("you-lose");
+        MemoryGame.session.edition = "Bootcampers";
     };
 
     // Generates random gif from Giphy API
