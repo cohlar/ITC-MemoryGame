@@ -53,7 +53,8 @@ window.onload = function () {
         this.session.selectedImages.forEach(function (imageName, index) {
             $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" />`));
         });
-        MemoryGame.styleImages();   // styles images on the page according to screen size
+        MemoryGame.styleImages();   // defines how images will be displayed on the page according to screen size
+        MemoryGame.images.lazyLoad();
     };
 
     // Reveals images when clicked on
@@ -299,6 +300,14 @@ window.onload = function () {
         });
     };
 
-    MemoryGame.init();
+    // Downloads images behing the scene so they can be displayed instantly when revealing them
+    MemoryGame.images.lazyLoad = async function () {
+        const imagePath = MemoryGame.images.path + MemoryGame.session.edition + "/";
+        await MemoryGame.session.selectedImages.forEach(function (imageName) {
+            $(`<img src="${imagePath + imageName}.jpg" />`);
+        });
+    };
 
+    // And this is where all the magic happens
+    MemoryGame.init();
 };
