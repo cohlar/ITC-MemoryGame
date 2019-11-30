@@ -2,6 +2,7 @@
 
 window.onload = function () {
 
+    // NameSpace and main game variables
     let MemoryGame = {
 
         images: {
@@ -14,7 +15,7 @@ window.onload = function () {
         },
 
         session: {
-            numImages: 6,       // beginner mode
+            numUniqueImages: 6,       // beginner mode
             hideImageLagTime: 2000,     // in ms
             displayModalLagTime: 1000,  // in ms
             selectedImages: undefined,
@@ -26,32 +27,36 @@ window.onload = function () {
         },
     };
 
+    // Initiates the game and webpage when opening the URL
     MemoryGame.init = function () {
-        MemoryGame.session.setToDefault();
+        MemoryGame.setToDefault();
         MemoryGame.generateHTML();
-        MemoryGame.styleImages();
         $(".game-img").on("click", MemoryGame.revealImage);
         $(".new-game-btn").on("click", MemoryGame.startNewGame);
         $(window).on("resize", MemoryGame.styleImages);
     };
 
-    MemoryGame.session.setToDefault = function () {
+    // Sets / Resets game variables to their default value
+    MemoryGame.setToDefault = function () {
         $("#game > img").remove();
-        this.selectedImages = [];
-        this.score = this.startScore;
-        this.rightAnswerCount = 0;
-        this.wrongAnswerCount = 0;
+        this.session.selectedImages = [];
+        this.session.score = this.startScore;
+        this.session.rightAnswerCount = 0;
+        this.session.wrongAnswerCount = 0;
+        this.setScore();
     };
 
+    // Generates HTML elements dynamically (mainly images)
     MemoryGame.generateHTML = function () {
-        $("#edition").html(this.session.edition);
-        this.setScore();
-        this.generateImagesRandomly(this.session.numImages);
+        $("#edition").html(this.session.edition);   // name of the edition at the top of the page
+        this.generateImagesRandomly(this.session.numUniqueImages);
         this.session.selectedImages.forEach(function (imageName, index) {
             $("#game").append($(`<img src="${MemoryGame.images.path + MemoryGame.images.unknownImageName}" id="${index}" class="game-img" />`));
         });
+        MemoryGame.styleImages();   // styles images on the page according to screen size
     };
 
+    // Reveals images when clicked on
     MemoryGame.revealImage = function () {
         $(".game-img.last-revealed").toggleClass("last-revealed");
         const imagePath = MemoryGame.images.path + MemoryGame.session.edition + "/";
@@ -73,19 +78,54 @@ window.onload = function () {
             }
             MemoryGame.setScore();
         }
-        if (MemoryGame.session.rightAnswerCount === MemoryGame.session.numImages) {
+        if (MemoryGame.session.rightAnswerCount === MemoryGame.session.numUniqueImages) {
             MemoryGame.displayWinModal();
         } else if (MemoryGame.session.score === 0) {
+            $(".game-img").off("click", MemoryGame.revealImage);
             MemoryGame.displayLoseModal();
         }
     };
 
+    // Hides back images when required
     MemoryGame.hideImages = function () {
-        $(".game-img.active").attr("src", MemoryGame.images.path + MemoryGame.images.unknownImageName);
-        $(".game-img.active").toggleClass("active");
-        $(".game-img:not(.matched)").on("click", MemoryGame.revealImage);
+        if (MemoryGame.session.score > 0) {
+            $(".game-img.active").attr("src", MemoryGame.images.path + MemoryGame.images.unknownImageName);
+            $(".game-img.active").toggleClass("active");
+            $(".game-img:not(.matched)").on("click", MemoryGame.revealImage);
+        }
     };
 
+    // Resets the game when clicking on new game buttons
+    MemoryGame.startNewGame = function () {
+        $(".new-game-btn.active").toggleClass("active");
+        $(`[name ="${this.name}"]`).toggleClass("active");
+        switch (this.name) {
+            case "level1-btn":
+                MemoryGame.session.numUniqueImages = 6;
+                break;
+            case "level2-btn":
+                MemoryGame.session.numUniqueImages = 9;
+                break;
+            case "level3-btn":
+                MemoryGame.session.numUniqueImages = 12;
+                break;
+        }
+        MemoryGame.removeModal();
+        MemoryGame.setToDefault();
+        MemoryGame.generateHTML();
+        MemoryGame.styleImages();
+        $(".game-img").on("click", MemoryGame.revealImage);
+    };
+
+    // Sets and displays score based on number of right and wrong answers
+    MemoryGame.setScore = function () {
+        this.session.score = Math.max(0, this.session.startScore + this.session.rightAnswerCount * 10 - this.session.wrongAnswerCount * 5);
+        $("#score").html(this.session.score);
+        $("#right-answer-count").html(this.session.rightAnswerCount);
+        $("#wrong-answer-count").html(this.session.wrongAnswerCount);
+    };
+
+    // Selects images randomly based on the specified number of images to display
     MemoryGame.generateImagesRandomly = function (numInput) {
         const imagesAvailable = (this.session.edition === "Bootcampers") ? this.images.totalImagesAvailable.bootcampers : this.images.totalImagesAvailable.larry;
         while (this.session.selectedImages.length < numInput) {
@@ -95,45 +135,20 @@ window.onload = function () {
         this.session.selectedImages = this.doubleArrayRandomly(this.session.selectedImages);
     };
 
+    // Pushes the content of an array at the end of that same array
     MemoryGame.doubleArrayRandomly = function (array) {
         array = array.concat(array);
         array = this.shuffle(array);
         return array;
     };
 
+    // Shuffles arrays randomly
     MemoryGame.shuffle = function (array) {
         array.sort(() => Math.random() - 0.5);
         return array;
     };
 
-    MemoryGame.setScore = function () {
-        this.session.score = Math.max(0, this.session.startScore + this.session.rightAnswerCount * 10 - this.session.wrongAnswerCount * 5);
-        $("#score").html(this.session.score);
-        $("#right-answer-count").html(this.session.rightAnswerCount);
-        $("#wrong-answer-count").html(this.session.wrongAnswerCount);
-    };
-
-    MemoryGame.startNewGame = function () {
-        $(".new-game-btn.active").toggleClass("active");
-        $(`[name ="${this.name}"]`).toggleClass("active");
-        switch (this.name) {
-            case "level1-btn":
-                MemoryGame.session.numImages = 6;
-                break;
-            case "level2-btn":
-                MemoryGame.session.numImages = 9;
-                break;
-            case "level3-btn":
-                MemoryGame.session.numImages = 12;
-                break;
-        }
-        MemoryGame.removeModal();
-        MemoryGame.session.setToDefault();
-        MemoryGame.generateHTML();
-        MemoryGame.styleImages();
-        $(".game-img").on("click", MemoryGame.revealImage);
-    };
-
+    // Generates and displays win modal
     MemoryGame.displayWinModal = function () {
         MemoryGame.createModal();
         $("#modal").append(`
@@ -158,6 +173,7 @@ window.onload = function () {
         MemoryGame.session.edition = "Larry";
     };
 
+    // Generates and displays lose modal
     MemoryGame.displayLoseModal = function () {
         MemoryGame.createModal();
         $("#modal").append(`
@@ -181,6 +197,7 @@ window.onload = function () {
         MemoryGame.displayRandomGif("you-lose");
     };
 
+    // Generates random gif from Giphy API
     MemoryGame.displayRandomGif = async function (inputTag) {
         try {
             let response = await $.ajax({
@@ -200,6 +217,7 @@ window.onload = function () {
         $(".modal-gif-container.loading").toggleClass("loading");
     }
 
+    // Generates the modal HTML
     MemoryGame.createModal = function () {
         $("body").append(`
             <div class="modal-background">
@@ -211,10 +229,12 @@ window.onload = function () {
         $("#close-modal").on("click", this.removeModal);
     };
 
+    // Removes the modal from the screen
     MemoryGame.removeModal = function () {
         $(".modal-background").remove();
     };
 
+    // Styles the images responsively based on the screen size
     MemoryGame.styleImages = function () {
         const gameContainer = {
             width: $("#game-container").width(),
@@ -222,9 +242,9 @@ window.onload = function () {
         };
         let gameWidth = gameContainer.width;
         let imgMargin = gameContainer.width / 80;
-        let imgSize = (gameContainer.width + gameContainer.height - 2 * imgMargin) / (MemoryGame.session.numImages * 2);
+        let imgSize = (gameContainer.width + gameContainer.height - 2 * imgMargin) / (MemoryGame.session.numUniqueImages * 2);
 
-        switch (MemoryGame.session.numImages) {
+        switch (MemoryGame.session.numUniqueImages) {
             case 6:
                 if (gameContainer.width >= (imgSize + imgMargin * 2) * 6) {
                     imgMargin = (gameContainer.width / 6 - imgSize) / 2;

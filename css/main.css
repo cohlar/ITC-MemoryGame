@@ -157,30 +157,10 @@ header .title h2 {
 
 .game-img {
     box-sizing: border-box;
-    /* box-sizing: border-box;
-    width: 19vw;
-    height: 19vw; */
-    /* width: calc( 90 * (1vh + 1vw) / 12);
-    height: calc( 90 * (1vh + 1vw) / 12); */
-    /* max-width: 150px;
-    max-height: 150px;
-    min-width: 50px;
-    min-height: 50px; */
     border-radius: 50%;
-    /* margin: 10px; */
     object-fit: cover;
-    /* border: 2px solid rgba(200,200,200,0.8);
-    box-shadow: 3px 3px 3px 0px rgba(200,200,200,0.8); */
-    /* border: 1px solid rgba(0,0,0,0.65); */
     box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.65);
 }
-/* 
-@media only screen and (max-height: 500px) and (orientation: landscape) {
-    .game-img {
-        width: 12vw;
-        height: 12vw;
-    }
-} */
 
 .game-img.last-revealed {
     animation-name: scaleout;
@@ -235,6 +215,18 @@ header .title h2 {
     justify-content: center;
     align-items: center;
     cursor: pointer;
+}
+
+#close-modal:hover {
+    color: white;
+    font-weight: 700;
+    background-color: rgb(228,61,42);
+}
+
+#close-modal:active {
+    color: white;
+    font-weight: 700;
+    background-color: rgba(132,29,17,.8);
 }
 
 #modal h1, #modal p {
